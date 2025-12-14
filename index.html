@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>OneSignal Web Push Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- OneSignal SDK -->
+  <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
+
+  <script>
+    window.OneSignal = window.OneSignal || [];
+    OneSignal.push(function() {
+      OneSignal.init({
+        appId: "f8997d04-4368-40e0-84ff-b8f21cf10cc5",
+        notifyButton: {
+          enable: true, // shows floating bell
+        },
+        promptOptions: {
+          slidedown: {
+            enabled: true,
+            actionMessage: "Allow notifications to receive updates",
+            acceptButtonText: "ALLOW",
+            cancelButtonText: "NO THANKS"
+          }
+        }
+      });
+    });
+  </script>
+</head>
+
+<body style="font-family: Arial; text-align: center; padding-top: 60px;">
+  <h1>🔔 OneSignal Web Push Test</h1>
+  <p>Click allow when the browser asks for permission.</p>
+
+  <button onclick="OneSignal.showSlidedownPrompt()"
+          style="padding:12px 20px;font-size:16px;">
+    Subscribe to Notifications
+  </button>
+</body>
+</html>
