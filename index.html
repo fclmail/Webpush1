@@ -1,41 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>OneSignal Web Push Test</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<title>OneSignal Subscription Status</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- OneSignal SDK -->
-  <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
+<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
 
-  <script>
-    window.OneSignal = window.OneSignal || [];
-    OneSignal.push(function() {
-      OneSignal.init({
-        appId: "f8997d04-4368-40e0-84ff-b8f21cf10cc5",
-        notifyButton: {
-          enable: true, // shows floating bell
-        },
-        promptOptions: {
-          slidedown: {
-            enabled: true,
-            actionMessage: "Allow notifications to receive updates",
-            acceptButtonText: "ALLOW",
-            cancelButtonText: "NO THANKS"
-          }
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 60px;
+  }
+  .status {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 20px 0;
+  }
+  .green { color: green; }
+  .red { color: red; }
+  .orange { color: orange; }
+  button {
+    padding: 12px 22px;
+    font-size: 16px;
+    margin: 8px;
+    cursor: pointer;
+  }
+</style>
+
+<script>
+window.OneSignal = window.OneSignal || [];
+
+OneSignal.push(function () {
+  OneSignal.init({
+    appId: "f8997d04-4368-40e0-84ff-b8f21cf10cc5",
+    notifyButton: { enable: true }
+  });
+
+  updateStatus();
+});
+
+function updateStatus() {
+  OneSignal.push(function () {
+    OneSignal.getNotificationPermission().then(function (permission) {
+
+      if (permission === "denied") {
+        document.getElementById("status").innerHTML =
+          "🚫 Notifications Blocked";
+        document.getElementById("status").className =
+          "status red";
+        return;
+      }
+
+      OneSignal.isPushNotificationsEnabled().then(function (enabled) {
+
+        if (enabled) {
+          document.getElementById("status").innerHTML =
+            "🟢 Subscribed to Notifications";
+          document.getElementById("status").className =
+            "status green";
+        } else {
+          document.getElementById("status").innerHTML =
+            "🔴 Not Subscribed";
+          document.getElementById("status").className =
+            "status orange";
         }
+
       });
     });
-  </script>
+  });
+}
+
+function subscribeUser() {
+  OneSignal.push(function () {
+    OneSignal.showNativePrompt();
+    setTimeout(updateStatus, 2000);
+  });
+}
+
+function unsubscribeUser() {
+  OneSignal.push(function () {
+    OneSignal.setSubscription(false);
+    setTimeout(updateStatus, 1000);
+  });
+}
+</script>
 </head>
 
-<body style="font-family: Arial; text-align: center; padding-top: 60px;">
-  <h1>🔔 OneSignal Web Push Test</h1>
-  <p>Click allow when the browser asks for permission.</p>
+<body>
 
-  <button onclick="OneSignal.showSlidedownPrompt()"
-          style="padding:12px 20px;font-size:16px;">
-    Subscribe to Notifications
-  </button>
+<h1>🔔 Push Notification Status</h1>
+
+<div id="status" class="status">Checking...</div>
+
+<button onclick="subscribeUser()">Subscribe</button>
+<button onclick="unsubscribeUser()">Unsubscribe</button>
+
+<p style="font-size:14px;color:#555">
+Green = subscribed<br>
+Orange = not subscribed<br>
+Red = blocked by browser
+</p>
+
 </body>
 </html>
